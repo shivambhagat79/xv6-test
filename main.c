@@ -5,6 +5,7 @@
 #include "mmu.h"
 #include "proc.h"
 #include "x86.h"
+//hello
 
 static void startothers(void);
 static void mpmain(void)  __attribute__((noreturn));
