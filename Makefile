@@ -181,6 +181,8 @@ UPROGS=\
 	_usertests\
 	_wc\
 	_zombie\
+    _test_numvp\
+	_test_numpp\
 	_test_mmap\
 
 fs.img: mkfs README $(UPROGS)

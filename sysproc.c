@@ -7,6 +7,55 @@
 #include "mmu.h"
 #include "proc.h"
 
+static pte_t *
+walkpgdir(pde_t *pgdir, const void *va, int alloc)
+{
+  pde_t *pde;
+  pte_t *pgtab;
+  pde = &pgdir[PDX(va)];
+  if (*pde & PTE_P)
+  {
+    pgtab = (pte_t *)P2V(PTE_ADDR(*pde));
+  }
+  else
+  {
+    if (!alloc || (pgtab = (pte_t *)kalloc()) == 0)
+      return 0;
+    // Make sure all those PTE_P bits are zero.
+    memset(pgtab, 0, PGSIZE);
+    // The permissions here are overly generous, but they can
+    // be further restricted by the permissions in the page table
+    // entries, if necessary.
+    *pde = V2P(pgtab) | PTE_P | PTE_W | PTE_U;
+  }
+  return &pgtab[PTX(va)];
+}
+
+int sys_numvp(void)
+{
+  struct proc *p = myproc();
+  int virtual_pages = PGROUNDUP(p->sz) / PGSIZE;
+  return virtual_pages + 1;
+}
+
+int sys_numpp(void)
+{
+  struct proc *p = myproc();
+  int physical_pages = 0;
+  pte_t *pte;
+  for (int i = 0; i < p->sz; i += PGSIZE)
+  {
+    pte = walkpgdir(p->pgdir, (void *)i, 0);
+    if (pte && (*pte & PTE_P))
+      physical_pages++;
+  }
+
+  pte = walkpgdir(p->pgdir, (void *)PGROUNDUP(p->sz), 0);
+  if (pte && (*pte & PTE_P))
+    physical_pages++;
+  return physical_pages;
+}
+
 int sys_mmap(void)
 {
   int size;

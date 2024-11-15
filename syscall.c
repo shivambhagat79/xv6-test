@@ -99,6 +99,8 @@ extern int sys_unlink(void);
 extern int sys_wait(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
+extern int sys_numvp(void);
+extern int sys_numpp(void);
 extern int sys_mmap(void);
 
 static int (*syscalls[])(void) = {
@@ -123,6 +125,8 @@ static int (*syscalls[])(void) = {
     [SYS_link] sys_link,
     [SYS_mkdir] sys_mkdir,
     [SYS_close] sys_close,
+    [SYS_numvp] sys_numvp,
+    [SYS_numpp] sys_numpp,
     [SYS_mmap] sys_mmap,
 };
 
