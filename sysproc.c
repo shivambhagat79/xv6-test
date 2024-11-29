@@ -7,6 +7,10 @@
 #include "mmu.h"
 #include "proc.h"
 
+int sys_getNumFreePages(void) {
+    return num_free_pages;
+}
+
 int
 sys_fork(void)
 {
